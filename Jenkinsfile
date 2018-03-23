@@ -10,7 +10,7 @@ server = Artifactory.server 'artifactory.reform'
 buildInfo = Artifactory.newBuildInfo()
 
 properties(
-    [[$class: 'GithubProjectProperty', displayName: 'User Profile API', projectUrlStr: 'https://git.reform.hmcts.net/case-management/user-profile-app/'],
+    [[$class: 'GithubProjectProperty', displayName: 'User Profile API', projectUrlStr: 'https://github.com/hmcts/ccd-user-profile-api/'],
      pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
 
