@@ -6,11 +6,17 @@ import org.springframework.cloud.netflix.feign.support.SpringMvcContract;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 
+import static java.util.Objects.requireNonNull;
+
 public class S2SHelper {
 
     private final ServiceAuthTokenGenerator tokenGenerator;
 
     public S2SHelper(final String s2sUrl, final String secret, final String microservice) {
+        requireNonNull(s2sUrl);
+        requireNonNull(secret);
+        requireNonNull(microservice);
+        
         final ServiceAuthorisationApi serviceAuthorisationApi = Feign.builder()
             .encoder(new JacksonEncoder())
             .contract(new SpringMvcContract())
