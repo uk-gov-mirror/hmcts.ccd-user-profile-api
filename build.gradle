@@ -23,6 +23,7 @@ plugins {
     id "com.github.spotbugs" version "1.6.2"
     id "com.github.kt3k.coveralls" version "2.8.2"
     id 'net.ltgt.apt' version '0.18'
+    id "info.solidsoft.pitest" version "1.3.0"
 }
 
 dependencyUpdates.resolutionStrategy = {
@@ -159,6 +160,9 @@ dependencies {
     testCompile group: 'com.opentable.components', name: 'otj-pg-embedded', version: '0.12.0'
     testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '2.18.0'
     testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '1.2.4.RELEASE'
+    compile group: 'org.pitest', name: 'pitest', version: '1.3.2'
+    compile group:'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: '1.3.0'
+    compile group:'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: '0.5'
 }
 // end::dependencies[]
 
@@ -314,6 +318,8 @@ sonarqube {
     properties {
         property "sonar.projectName", "ccd-user-profile-api"
         property "sonar.projectKey", "ccd-user-profile-api"
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
 
@@ -340,4 +346,12 @@ task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
             "-r",
             "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     ]
+}
+
+pitest {
+    targetClasses = ['**uk.gov.hmcts.ccd.*']
+    threads = 4
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = true
+    mutationThreshold = 75
 }
