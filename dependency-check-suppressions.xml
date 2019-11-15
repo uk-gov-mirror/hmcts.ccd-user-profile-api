@@ -106,7 +106,16 @@
         <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
         <cve>CVE-2018-1000873</cve>
     </suppress>
-
+    <suppress>
+        <notes>Temporarily suppress jackson-databind CVE see RDM-3796</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
+        <cve>CVE-2019-14379</cve>
+    </suppress>
+    <suppress>
+        <notes>Temporarily suppress jackson-databind CVE see RDM-3796</notes>
+        <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
+        <cve>CVE-2019-14439</cve>
+    </suppress>
     <suppress>
         <notes><![CDATA[
             Suppressing as it seems a false positive as per https://github.com/jeremylong/DependencyCheck/issues/1573
@@ -134,5 +143,13 @@
     <suppress>
         <cve>CVE-2019-14379</cve>
         <cve>CVE-2019-14439</cve>
+     <!-- RDM-6147 - should remove these suppressions -->
+    </suppress>
+    <suppress>
+        <notes><![CDATA[ file name: jackson-databind-2.9.10.jar ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2019-16942</cve>
+        <cve>CVE-2019-16943</cve>
+        <cve>CVE-2019-17531</cve>
     </suppress>
 </suppressions>
