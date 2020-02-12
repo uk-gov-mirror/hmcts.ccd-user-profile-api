@@ -1,5 +1,7 @@
 package uk.gov.hmcts.ccd.endpoint.userprofile;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.ccd.AppInsights;
+import uk.gov.hmcts.ccd.domain.model.CallbackRequest;
+import uk.gov.hmcts.ccd.domain.model.CallbackResponse;
 import uk.gov.hmcts.ccd.domain.model.UserProfile;
 import uk.gov.hmcts.ccd.domain.service.DeleteUserProfileJurisdictionOperation;
 import uk.gov.hmcts.ccd.domain.service.FindAllUserProfilesOperation;
@@ -28,6 +32,7 @@ import javax.transaction.Transactional;
 
 @RestController
 class UserProfileController {
+    private static final JsonNodeFactory JSON_NODE_FACTORY = new JsonNodeFactory(false);
     private final FindAllUserProfilesOperation findAllUserProfilesOperation;
     private final UserProfileOperation userProfileOperation;
     private final SaveUserProfileOperation saveUserProfileOperation;
@@ -45,6 +50,37 @@ class UserProfileController {
         this.saveUserProfileOperation = saveUserProfileOperation;
         this.deleteUserProfileJurisdictionOperation = deleteUserProfileJurisdictionOperation;
         this.appInsights = appInsights;
+    }
+
+    @RequestMapping(value = "/callback", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "Callback",
+        notes = "Optional filtering of results via \"jurisdiction\" request parameter")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Found User Profiles"),
+        @ApiResponse(code = 400, message = "Unable to find User Profiles")
+    })
+    public CallbackResponse postCallback(@RequestBody final CallbackRequest request) {
+        Instant start = Instant.now();
+        CallbackResponse callbackResponse;
+        if (fieldValueMatches(request, "TextFieldFName", "John")
+            || fieldValueMatches(request, "TextFieldMName", "Smith")) {
+            callbackResponse = new CallbackResponse();
+            callbackResponse.setErrors(Lists.newArrayList("You've entered invalid data"));
+        } else {
+            callbackResponse = new CallbackResponse();
+            callbackResponse.setData(request.getCaseDetails().getData());
+            callbackResponse.setDataClassification(request.getCaseDetails().getDataClassification());
+            callbackResponse.setSecurityClassification(request.getCaseDetails().getSecurityClassification());
+        }
+        final Duration between = Duration.between(start, Instant.now());
+        appInsights.trackRequest(between, true);
+        return callbackResponse;
+    }
+
+    private boolean fieldValueMatches(@RequestBody final CallbackRequest request, String fieldName, String fieldValue) {
+        return request.getCaseDetails().getData().containsKey(fieldName)
+        && request.getCaseDetails().getData().get(fieldName).equals(JSON_NODE_FACTORY.textNode(fieldValue));
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
