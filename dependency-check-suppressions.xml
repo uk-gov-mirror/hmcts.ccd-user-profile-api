@@ -8,6 +8,10 @@
 		</notes>
 		<cve>CVE-2016-6497</cve>
 	</suppress>
+    <suppress>
+        <notes>ben-manes.caffeine but it's not used.</notes>
+        <cve>CVE-2017-18365</cve>
+    </suppress>
 	<suppress>
 		<notes>postgresql-42.2.2.jar (org.postgresql:postgresql:42.2.2,
 			cpe:/a:postgresql:postgresql:42.2.2,
