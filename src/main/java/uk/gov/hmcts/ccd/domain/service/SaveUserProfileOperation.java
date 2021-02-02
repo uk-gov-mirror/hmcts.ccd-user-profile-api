@@ -34,7 +34,8 @@ public class SaveUserProfileOperation {
         if (existingJurisdiction == null) {
             final JurisdictionEntity newJurisdiction = new JurisdictionEntity();
             newJurisdiction.setId(userProfile.getWorkBasketDefaultJurisdiction());
-            LOG.info("No Jurisdiction entity for {} found. Creating new Jurisdiction...", newJurisdiction.getId());
+            LOG.info("No Jurisdiction entity for {} found. Creating new Jurisdiction...", newJurisdiction.getId()
+                .replaceAll("[\n|\r|\t]", "_"));
             jurisdictionRepository.create(newJurisdiction);
         }
 
@@ -44,7 +45,6 @@ public class SaveUserProfileOperation {
         final UserProfile foundUserProfile = userProfileRepository.findById(userProfile.getId(), actionedBy);
 
         if (foundUserProfile == null) {
-            LOG.info("No User Profile for {} found. Creating new User Profile...", userProfile.getId());
             return createUserProfileOperation.execute(userProfile, actionedBy);
         } else {
             // Attempt to update the user profile (UserProfileRepository will throw an exception if the user is being

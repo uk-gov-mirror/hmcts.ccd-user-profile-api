@@ -22,12 +22,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
-import static uk.gov.hmcts.ccd.data.userprofile.AuditAction.*;
+import static uk.gov.hmcts.ccd.data.userprofile.AuditAction.CREATE;
+import static uk.gov.hmcts.ccd.data.userprofile.AuditAction.DELETE;
+import static uk.gov.hmcts.ccd.data.userprofile.AuditAction.READ;
+import static uk.gov.hmcts.ccd.data.userprofile.AuditAction.UPDATE;
 
 @Repository
 public class UserProfileRepository {
 
     public static final String NOT_APPLICABLE = "N/A";
+    private static final String USER_DEOS_NOT_EXIST = "User does not exist";
     private final JurisdictionRepository jurisdictionRepository;
     private final UserProfileAuditEntityRepository userProfileAuditEntityRepository;
 
@@ -95,7 +99,7 @@ public class UserProfileRepository {
 
         final UserProfileEntity userProfileEntity = findEntityById(userProfile.getId(), actionedBy, false);
         if (null == userProfileEntity) {
-            throw new BadRequestException("User does not exist with Id " + userProfile.getId());
+            throw new BadRequestException(USER_DEOS_NOT_EXIST);
         }
 
         final boolean auditable = isAuditable(userProfileEntity);
@@ -224,7 +228,7 @@ public class UserProfileRepository {
 
         final UserProfileEntity userProfileEntity = findEntityById(userProfile.getId(), actionedBy, false);
         if (null == userProfileEntity) {
-            throw new BadRequestException("User does not exist with ID " + userProfile.getId());
+            throw new BadRequestException(USER_DEOS_NOT_EXIST);
         }
 
         final UserProfile audit = UserProfileMapper.entityToModel(userProfileEntity);
@@ -255,9 +259,7 @@ public class UserProfileRepository {
             }
             return UserProfileMapper.entityToModel(userProfileEntity);
         } else {
-            throw new BadRequestException("User with ID "
-                                          + userProfile.getId()
-                                          + " is already a member of the "
+            throw new BadRequestException("User is already a member of the "
                                           + userProfile.getWorkBasketDefaultJurisdiction()
                                           + " jurisdiction");
         }
@@ -282,7 +284,7 @@ public class UserProfileRepository {
                                                          final String actionedBy) {
         final UserProfileEntity userProfileEntity = findEntityById(userProfile.getId(), actionedBy, false);
         if (userProfileEntity == null) {
-            throw new BadRequestException("User does not exist with ID " + userProfile.getId());
+            throw new BadRequestException(USER_DEOS_NOT_EXIST);
         }
 
         final String currentJurisdiction = userProfileEntity.getWorkBasketDefaultJurisdiction();
