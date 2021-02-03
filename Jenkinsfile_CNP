@@ -4,7 +4,7 @@ properties(
          pipelineTriggers([[$class: 'GitHubPushTrigger']])]
 )
 
-@Library("Infrastructure@ethosldata")
+@Library("Infrastructure")
 
 def type = "java"
 def product = "ccd"
